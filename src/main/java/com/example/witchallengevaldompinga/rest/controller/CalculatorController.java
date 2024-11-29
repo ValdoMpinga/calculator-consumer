@@ -1,12 +1,14 @@
 package com.example.witchallengevaldompinga.rest.controller;
 
-import com.example.witchallengevaldompinga.calculator.service.CalculatorService;
+
 import com.example.witchallengevaldompinga.dto.CalculatorDTO;
+import com.example.witchallengevaldompinga.service.CalculatorServiceClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 
@@ -14,33 +16,29 @@ import java.math.BigDecimal;
 @RequestMapping("/calculator")
 public class CalculatorController {
 
-    private final CalculatorService calculatorService;
+    private final CalculatorServiceClient serviceClient;
 
-    public CalculatorController(CalculatorService calculatorService) {
-        this.calculatorService = calculatorService;
+    public CalculatorController(CalculatorServiceClient serviceClient) {
+        this.serviceClient = serviceClient;
     }
 
     @PostMapping("/add")
-    public ResponseEntity<BigDecimal> add(@RequestBody CalculatorDTO request) {
-        return ResponseEntity.ok(calculatorService.add(request.getA(), request.getB()));
+    public ResponseEntity<Mono<BigDecimal>> add(@RequestBody CalculatorDTO request) {
+        return ResponseEntity.ok(serviceClient.add(request));
     }
 
     @PostMapping("/subtract")
-    public ResponseEntity<BigDecimal> subtract(@RequestBody CalculatorDTO request) {
-        return ResponseEntity.ok(calculatorService.subtract(request.getA(), request.getB()));
+    public ResponseEntity<Mono<BigDecimal>> subtract(@RequestBody CalculatorDTO request) {
+        return ResponseEntity.ok(serviceClient.subtract(request));
     }
 
     @PostMapping("/multiply")
-    public ResponseEntity<BigDecimal> multiply(@RequestBody CalculatorDTO request) {
-        return ResponseEntity.ok(calculatorService.multiply(request.getA(), request.getB()));
+    public ResponseEntity<Mono<BigDecimal>> multiply(@RequestBody CalculatorDTO request) {
+        return ResponseEntity.ok(serviceClient.multiply(request));
     }
 
     @PostMapping("/divide")
-    public ResponseEntity<BigDecimal> divide(@RequestBody CalculatorDTO request) {
-        try {
-            return ResponseEntity.ok(calculatorService.divide(request.getA(), request.getB()));
-        } catch (ArithmeticException e) {
-            return ResponseEntity.badRequest().body(null);
-        }
+    public ResponseEntity<Mono<BigDecimal>> divide(@RequestBody CalculatorDTO request) {
+        return ResponseEntity.ok(serviceClient.divide(request));
     }
 }
